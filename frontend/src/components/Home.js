@@ -18,7 +18,7 @@ function Home() {
     const [totalItem, setTotalItem] = useState(0);
     const menuItems = [
         { label:"Menu", icon: <FastfoodIcon/>, },
-        { label:"Cart", icon: <ShoppingCartIcon/>, badge:1},
+        { label:"Cart", icon: <ShoppingCartIcon/>, badge:2},
         { label:"Order", icon: <ViewListIcon/>,badge:2 },
         { label:"Admin", icon: <VerifiedUserIcon/>, },
     ]
@@ -222,14 +222,18 @@ return (
                 color={ menuActive === menu.label ? "primary" : "secondary"}
                 sx={{display:"flex", flex:1, flexDirection:"column", alignItems:"center"}}
                 >
-                
-                {menu.badge ? (
-                    <Badge badgeContent={menu.badge} color="primary">
-                         {menu.icon}
+
+                {menu.label === "Cart" ? (
+                    <Badge badgeContent={totalItem} color="primary">
+                    {menu.icon}
+                    </Badge>
+                ) : ( menu.label === "Order" ? (
+                    <Badge badgeContent={totalItem} color="primary">
+                    {menu.icon}
                     </Badge>
                 ) : (
                     menu.icon
-                )}                  
+                ))}
                 {menu.label}
                 </Button>
             ))}
