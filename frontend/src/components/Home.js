@@ -5,6 +5,7 @@ import FastfoodIcon from '@mui/icons-material/Fastfood';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import "../AddButton.css"
 
 
 
@@ -14,6 +15,7 @@ function Home() {
     const [query, setQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [menuActive, setMenuActive] = useState("Menu");
+    const [totalItem, setTotalItem] = useState(0);
     const menuItems = [
         { label:"Menu", icon: <FastfoodIcon/>, },
         { label:"Cart", icon: <ShoppingCartIcon/>, badge:1},
@@ -45,7 +47,7 @@ return (
     left={0}
     top={0}
     width="100%"
-
+    zIndex={1}
     >
         <Box 
         name="top-bar"
@@ -104,6 +106,7 @@ return (
     left={0}
     top={140}
     width="100%"
+    zIndex={1}
     >
 
         <Box 
@@ -111,11 +114,7 @@ return (
         display="flex" 
         justifyContent="center" 
         alignItems="center"
-        
-
         mt={1} mb={1} ml={2} mr={2}
-
-
         >
             {category.map((category, index) => (
             <Button
@@ -139,7 +138,7 @@ return (
         gridTemplateColumns={{
             xs: "repeat(2, 1fr)",
             sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)"
+            md: "repeat(3, 1fr)",
         }}
         gap={2}
         >
@@ -148,11 +147,35 @@ return (
         {items
         .filter((item) => selectedCategory === "all" || item.category === selectedCategory)
         .map((item, index) => (
-            <Card key={index}>
+            <Card sx={{position:"relative"}} key={index}>
+
+                
+            <Box className="add-button-container">
+                 {totalItem === 0 ? (
+                    <Box className="border-box">
+                            <Button className="add-btn"
+                            onClick={() => setTotalItem((prev) => prev+1)}
+                            >+</Button>
+                    </Box>
+                 ) : (
+                    <Box className="border-box">
+                             <Button className="minus-btn"
+                            onClick={() => setTotalItem((prev) => prev-1)}
+                            >-
+                            </Button>
+                            <Button className="total-btn" >{totalItem}</Button>
+                            <Button className="add-btn"
+                            onClick={() => setTotalItem((prev) => prev+1)}
+                            >+
+                            </Button>
+                        </Box>  
+                    )}                    
+            </Box>
+
                 <CardMedia component="img" image={item.img}/>
                 <CardContent sx={{display:"flex", flexDirection:"column"}}>
                     <Typography>{item.name}</Typography>
-                    <Typography>{item.price}</Typography>
+                    <Typography>{item.price}</Typography>                   
                 </CardContent>
             </Card>
         ))}
@@ -172,13 +195,16 @@ return (
         display="flex" 
         justifyContent="center" 
         alignItems="center"
-        mr={2} mb={2} ml={2}
+        mr={2} ml={2} mt={2}
         >
+            {totalItem ? (
             <Button variant="contained"
             fullWidth
+            sx={{borderRadius: 10, height:"50px", mb:2}}
             > 
-            1 item selected - View Cart 
+            {totalItem} item selected - View Cart 
             </Button>
+            ) : ("")}
 
         </Box>
 
@@ -203,10 +229,7 @@ return (
                     </Badge>
                 ) : (
                     menu.icon
-                )}
-
-
-                   
+                )}                  
                 {menu.label}
                 </Button>
             ))}
