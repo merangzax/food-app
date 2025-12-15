@@ -1,38 +1,21 @@
-import React, {useState} from "react";
-import {Box, Typography, Button, TextField, InputAdornment, Divider, Badge, Card, CardContent, CardMedia,} from "@mui/material"
+import React, { useEffect} from "react";
+import {Box, Typography, Button, TextField, InputAdornment, Badge, Card, CardContent, CardMedia,} from "@mui/material"
+import { useHomeCrudeContext } from "../context/HomeCrudeContext";
 import SearchIcon from '@mui/icons-material/Search';
-import FastfoodIcon from '@mui/icons-material/Fastfood';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import "../AddButton.css"
-
 
 
 function Home() {
 
-    const category = ["all","drinks", "food"];
-    const [query, setQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("all");
-    const [menuActive, setMenuActive] = useState("Menu");
-    const [totalItem, setTotalItem] = useState(0);
-    const menuItems = [
-        { label:"Menu", icon: <FastfoodIcon/>, },
-        { label:"Cart", icon: <ShoppingCartIcon/>, badge:2},
-        { label:"Order", icon: <ViewListIcon/>,badge:2 },
-        { label:"Admin", icon: <VerifiedUserIcon/>, },
-    ]
-    const [items, setItems] = useState([
-        { name: "matcha", category: "drinks", price: "RM 15.50", img: "/img/sample-image.jpg" },
-        { name: "chicken chop", category: "food", price: "RM 20.50", img: "/img/sample-image.jpg" },
-        { name: "Mee Goreng Kaw", category: "food", price: "RM 13.50", img: "/img/sample-image.jpg" },
-        { name: "Mee Goreng Kaw", category: "food", price: "RM 13.50", img: "/img/sample-image.jpg" },
-        { name: "matcha", category: "drinks", price: "RM 15.50", img: "/img/sample-image.jpg" },
-        { name: "chicken chop", category: "food", price: "RM 20.50", img: "/img/sample-image.jpg" },
-        { name: "Mee Goreng Kaw", category: "food", price: "RM 13.50", img: "/img/sample-image.jpg" },
-        { name: "Mee Goreng Kaw", category: "food", price: "RM 13.50", img: "/img/sample-image.jpg" },
-    ])
+    const {navigate, query, setQuery, totalItem, handleAdd, handleMinus, selectedCategory, setSelectedCategory,
+        filteredItem, setMenuActive, menuActive, category, menuItems, totalOrder,
+    } = useHomeCrudeContext();
 
+    useEffect(() => {
+         setMenuActive("Menu") 
+    },[])
+    
+    
 return (
     <Box 
     name="Main-Home-Box"
@@ -78,6 +61,7 @@ return (
         display="flex" 
         justifyContent="center" 
         alignItems="center"
+        height={40}
         bgcolor="white"
         borderRadius={20}
         mt={1} mb={2} ml={2} mr={2}
@@ -104,7 +88,7 @@ return (
     position="fixed"
     bgcolor="white"
     left={0}
-    top={140}
+    top={125}
     width="100%"
     zIndex={1}
     >
@@ -133,39 +117,41 @@ return (
         <Box
         name ="item-display"
         mb={16}
-        mt={25}
+        mt={23}
         display="grid"
         gridTemplateColumns={{
             xs: "repeat(2, 1fr)",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
+            sm: "repeat(3, 1fr)",
+            md: "repeat(4, 1fr)",
         }}
         gap={2}
         >
         
-    
-        {items
-        .filter((item) => selectedCategory === "all" || item.category === selectedCategory)
-        .map((item, index) => (
+        
+        {filteredItem.length > 0 ? (
+            filteredItem.map((item, index) => (
             <Card sx={{position:"relative"}} key={index}>
 
                 
-            <Box className="add-button-container">
-                 {totalItem === 0 ? (
+            <Box className="add-button-container"
+            right={10}
+            bottom={100}
+            >
+                 {item.qty === 0 ? (
                     <Box className="border-box">
                             <Button className="add-btn"
-                            onClick={() => setTotalItem((prev) => prev+1)}
+                            onClick={() => handleAdd(item.id)}
                             >+</Button>
                     </Box>
                  ) : (
                     <Box className="border-box">
                              <Button className="minus-btn"
-                            onClick={() => setTotalItem((prev) => prev-1)}
+                            onClick={() => handleMinus(item.id)}
                             >-
                             </Button>
-                            <Button className="total-btn" >{totalItem}</Button>
+                            <Button className="total-btn" >{item.qty}</Button>
                             <Button className="add-btn"
-                            onClick={() => setTotalItem((prev) => prev+1)}
+                            onClick={() => handleAdd(item.id)}
                             >+
                             </Button>
                         </Box>  
@@ -175,11 +161,17 @@ return (
                 <CardMedia component="img" image={item.img}/>
                 <CardContent sx={{display:"flex", flexDirection:"column"}}>
                     <Typography>{item.name}</Typography>
-                    <Typography>{item.price}</Typography>                   
+                    <Typography>RM {item.price.toFixed(2)}</Typography>                   
                 </CardContent>
             </Card>
-        ))}
-
+        ))
+     ) : (
+        <Box gridColumn="1/-1" >
+            <Typography align="center" mt={3} color="grey">
+            Food unavailable, please search again.
+            </Typography>
+        </Box>
+    )}
         </Box>
     
     <Box 
@@ -198,11 +190,13 @@ return (
         mr={2} ml={2} mt={2}
         >
             {totalItem ? (
-            <Button variant="contained"
+            <Button 
+            variant="contained"
             fullWidth
             sx={{borderRadius: 10, height:"50px", mb:2}}
+            onClick={()=> navigate("/cart")}
             > 
-            {totalItem} item selected - View Cart 
+            {totalItem} items selected - View Cart 
             </Button>
             ) : ("")}
 
@@ -218,7 +212,10 @@ return (
 
             {menuItems.map((menu) => (
                 <Button
-                onClick={() => {setMenuActive(menu.label)}}
+                onClick={() => {
+                    setMenuActive(menu.label)
+                    navigate(`/${menu.label}`)
+                }}
                 color={ menuActive === menu.label ? "primary" : "secondary"}
                 sx={{display:"flex", flex:1, flexDirection:"column", alignItems:"center"}}
                 >
@@ -228,7 +225,7 @@ return (
                     {menu.icon}
                     </Badge>
                 ) : ( menu.label === "Order" ? (
-                    <Badge badgeContent={totalItem} color="primary">
+                    <Badge badgeContent={totalOrder} color="primary">
                     {menu.icon}
                     </Badge>
                 ) : (

@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { HomeCrudeContextProvider } from './context/HomeCrudeContext';
 
 const theme = createTheme({
   palette:{
@@ -16,7 +18,11 @@ root.render(
   
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-    <App />
+        <Router>
+          <HomeCrudeContextProvider>
+            <App />
+          </HomeCrudeContextProvider>
+        </Router>
     </ThemeProvider>
   </React.StrictMode>
    

@@ -2,16 +2,17 @@ import React, {useEffect, useState}  from "react";
 import {Box, Typography, Button, Divider, Badge, IconButton, Avatar} from "@mui/material"
 import "../AddButton.css"
 import { useHomeCrudeContext } from "../context/HomeCrudeContext";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ClearIcon from '@mui/icons-material/Clear';
+import cookingLogo from "../img/cooking-icon.png"
 
-function Cart() {
+function Order() {
 
    const {navigate, totalItem, handleAdd, handleMinus,  setMenuActive, menuActive, menuItems, items, totalOrder, 
            totalPrice, checkoutHandler, } = useHomeCrudeContext();
    
    
     useEffect(() => {
-          setMenuActive("Cart") 
+          setMenuActive("Order") 
        },[])
 
     
@@ -43,7 +44,7 @@ return (
             <IconButton
             onClick={() => navigate("/menu")}
             >
-            <ArrowBackIcon sx={{fontSize:30, color:"#484848ff"}}/>
+            <ClearIcon sx={{fontSize:30, color:"#484848ff"}}/>
             </IconButton>         
            
            <Box
@@ -55,13 +56,13 @@ return (
                 variant="h6"
                 color="black"
                 mb={-0.5}                >
-                    Your Cart
+                    Your Order
                 </Typography>
 
                 <Typography 
                 variant="body2"
                 color="black">
-                    Order for Table 15
+                    Table 15
                 </Typography>
            </Box>
         </Box>
@@ -71,42 +72,49 @@ return (
      
    <Box mt={10} mb={28}>
 
-        {totalItem ?  (items.map((item, index) => (
-            item.qty > 0 ? (
+                <Box
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                textAlign="center"
+                mt={15}
+                mb={5}
+                >
+                    <Box component="img" src={cookingLogo} sx={{height:100}} mb={1}/>    
+                    <Typography variant="h5" fontWeight="bold" mb={0.5}>Thank you for order!</Typography>
+                    <Typography variant="body2" mb={2} ml={5} mr={5}>Your orders are being prepared and will be delivered soon.</Typography>
+
+                </Box>
+
+        {totalOrder ?  (items.map((item, index) => (
+            item.order > 0 ? (
                 <Box name="main-item"
                 key={index}
                 display="flex"
                 flexDirection="row"
                 gap={3}
                 mb={4}
-                >   
+                >  
                     <Box>
-                    <Avatar 
-                    src={item.img}
-                    sx={{width:80, height:80, borderRadius:0}}
-                    />
+                        <Avatar 
+                        src={item.img}
+                        sx={{width:80, height:80, borderRadius:0}}
+                        />
                     </Box>
 
                     <Box position="relative" >
-                    <Typography>{item.name}</Typography>
-                    <Typography>RM {item.price.toFixed(2)}</Typography>
+                        <Typography>{item.name}</Typography>
+                        <Typography>RM {item.price.toFixed(2)}</Typography>
 
-                    <Box className="add-button-container"
-                        left={1}
-                        bottom={-5}
-                        >                                         
-                             <Box className="border-box">
-                                <Button className="minus-btn"
-                                onClick={() => handleMinus(item.id)}
-                                >-
-                                </Button>
-                                <Button className="total-btn" >{item.qty}</Button>
-                                <Button className="add-btn"
-                                onClick={() => handleAdd(item.id)}
-                                >+
-                                </Button>
-                            </Box>  
-                    </Box>
+                        <Box className="add-button-container"
+                            left={1}
+                            bottom={-5}
+                            >                                         
+                                <Box className="border-box">
+                                    <Button className="total-btn" >{item.order}</Button>
+                                </Box>  
+                        </Box>
                     </Box>
                 </Box>
             ) : ( null )                                           
@@ -117,17 +125,13 @@ return (
         flexDirection="column"
         justifyContent="center"
         alignItems="center"
+        textAlign="center"
         height="80vh"
         >
-        <Typography variant="h5" fontWeight="bold" mb={0.5}>Hungry?</Typography>
-        <Typography variant="body2" mb={2}>You haven't added anything to your cart!</Typography>
+        <Box component="img" src={cookingLogo} sx={{height:100}} mb={1}/>    
+        <Typography variant="h5" fontWeight="bold" mb={0.5}>Thank you for order!</Typography>
+        <Typography variant="body2" mb={2} ml={5} mr={5}>Your orders are being prepared and will be delivered soon.</Typography>
 
-        <Button 
-        variant="contained"
-        onClick={() => navigate("/menu")}
-        sx={{borderRadius:10, height:40, width:100}}
-        >Menu
-        </Button>
         </Box>
         )}
 
@@ -230,4 +234,4 @@ return (
 )
 }
 
-export default Cart;
+export default Order;
